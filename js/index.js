@@ -17,14 +17,18 @@ const fileType = {tcx: 'tcx', csv: 'csv'};
     var type = evt.target.id === 'tcxdropzone' ? fileType.tcx : fileType.csv;
 
     var summaryContainer = (type === fileType.tcx) ? document.getElementById('tcxSummaryContainer') : document.getElementById('csvSummaryContainer');
+    while (summaryContainer.lastChild){
+        summaryContainer.removeChild(summaryContainer.lastChild);
+    }
     var dataContainer = document.createElement('table');
     summaryContainer.appendChild(dataContainer);
     var currentRow = document.createElement('tr');
+    currentRow.classList.add('summaryHeader');
     if (type === fileType.tcx){
         appendCell('Timestamp', currentRow);
         appendCell('Activity', currentRow);
-        appendCell('Distance', currentRow);
-        appendCell('Minutes', currentRow);
+        appendCell('Distance (km)', currentRow);
+        appendCell('Total Time', currentRow);
         appendCell('Calories', currentRow);
         appendCell('Avg Heartrate', currentRow);
         appendCell('Min Heartrate', currentRow);
@@ -35,9 +39,9 @@ const fileType = {tcx: 'tcx', csv: 'csv'};
         appendCell('Status', currentRow);
         appendCell('Steps', currentRow);
         appendCell('Move Minutes', currentRow);
-        appendCell('Active (m)', currentRow);
-        appendCell('Running (m)', currentRow);
-        appendCell('Walking (m)', currentRow);
+        appendCell('Active', currentRow);
+        appendCell('Running', currentRow);
+        appendCell('Walking', currentRow);
         appendCell('Calories', currentRow);
         appendCell('Avg Heartrate', currentRow);
         appendCell('Min Heartrate', currentRow);
@@ -122,7 +126,7 @@ const fileType = {tcx: 'tcx', csv: 'csv'};
                     minimumHR = Math.min(minimumHR, parseFloat(trackpoint.HeartRateBpm[0].Value[0].jValue));
                 }
             }
-            distance = Math.max(distance, parseFloat(lap.DistanceMeters[0].jValue));
+            distance = lap.DistanceMeters ? Math.max(distance, parseFloat(lap.DistanceMeters[0].jValue)) : 0;
             totalTime += parseFloat(lap.TotalTimeSeconds[0].jValue);
             calories += parseFloat(lap.Calories[0].jValue);
             totalAverageReadings++;
@@ -142,10 +146,11 @@ const fileType = {tcx: 'tcx', csv: 'csv'};
         if(averageHR > 0){
             let currentRow = document.createElement('tr');
             
-            appendCell(timestamp, currentRow);
-            appendCell(intensity + ' ' + activityType, currentRow);
-            appendCell(roundToPrecision(distance / 1000, 3), currentRow);
-            appendCell(roundToPrecision(totalTime / 60, 0), currentRow);
+            appendCell(moment(timestamp).format('MMM D, YYYY - HH:MM'), currentRow);
+            // appendCell(intensity + ' ' + activityType, currentRow);
+            appendCell(activityType, currentRow);
+            appendCell(roundToPrecision(distance / 1000, 2), currentRow);
+            appendCell(formatDuration(totalTime * 1000), currentRow);
             appendCell(roundToPrecision(calories, 0), currentRow);
             appendCell(roundToPrecision(averageHR, 0), currentRow);
             appendCell(roundToPrecision(minimumHR, 0), currentRow);
@@ -196,21 +201,23 @@ const fileType = {tcx: 'tcx', csv: 'csv'};
     }
     averageHR = averageHR / totalAverageReadings;
 
-    let currentRow = document.createElement('tr');
-    appendCell(filename.substring(0, filename.length - 4), currentRow);
-    appendCell(incompleteData ? 'INCOMPLETE' : 'complete', currentRow);
-    appendCell(stepCount, currentRow);
-    appendCell(moveMinutes, currentRow);
-    appendCell(roundToPrecision((activeTime / 1000 / 60), 0), currentRow);
-    appendCell(roundToPrecision((timeRunning / 1000 / 60), 0), currentRow);
-    appendCell(roundToPrecision((timeWalking / 1000 / 60), 0), currentRow);
-    appendCell(roundToPrecision(calories, 0), currentRow);
-    appendCell(roundToPrecision(averageHR, 0), currentRow);
-    appendCell(roundToPrecision(minimumHR, 0), currentRow);
-    appendCell(roundToPrecision(maximumHR, 0), currentRow);
-    dataContainer.appendChild(currentRow);
-
-    return true;
+    if(totalAverageReadings > 0 && averageHR > 0){
+        let currentRow = document.createElement('tr');
+        appendCell(moment(filename.substring(0, filename.length - 4)).format('MMM D, YYYY'), currentRow);
+        appendCell(incompleteData ? 'INCOMPLETE' : 'complete', currentRow);
+        appendCell(stepCount, currentRow);
+        appendCell(moveMinutes, currentRow);
+        appendCell(formatDuration(activeTime), currentRow);
+        appendCell(formatDuration(timeRunning), currentRow);
+        appendCell(formatDuration(timeWalking), currentRow);
+        appendCell(roundToPrecision(calories, 0), currentRow);
+        appendCell(roundToPrecision(averageHR, 0), currentRow);
+        appendCell(roundToPrecision(minimumHR, 0), currentRow);
+        appendCell(roundToPrecision(maximumHR, 0), currentRow);
+        dataContainer.appendChild(currentRow);
+        return true;
+    }
+    return false;
 }
 
 
@@ -231,4 +238,8 @@ function appendCell(cellValue, parent){
     var cell = document.createElement('td');
     cell.innerHTML = cellValue;
     parent.appendChild(cell);
+}
+
+function formatDuration(milliseconds){
+    return moment.utc(moment.duration(milliseconds).as('milliseconds')).format('H[h] mm[m]');
 }

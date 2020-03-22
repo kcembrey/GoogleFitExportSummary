@@ -50,3 +50,32 @@ height: 75px;
 border: 1px solid #000;
 margin: 10px 5px 0 0;
 }
+
+.summaryContainer {
+  position: relative;
+  margin: auto;
+  margin-top: 20px;
+}
+
+.summaryContainer table{
+  table-layout: auto;
+  margin: auto;
+  border: 2px solid gray;
+  border-collapse: collapse;
+}
+
+.summaryHeader{
+  background-color: rgba(220, 220, 245, 1);
+}
+
+.summaryContainer td {
+  border-left: 1px solid rgba(50, 50, 50, .8);
+  border-right: 1px solid rgba(50, 50, 50, .8);
+  border-bottom: 1px solid rgba(221, 221, 221, 1);
+  padding: 2px 7px 2px 7px;
+  text-align: right;
+}
+
+.summaryContainer tr:hover {
+  background-color: rgba(245, 245, 245, 1);
+}
