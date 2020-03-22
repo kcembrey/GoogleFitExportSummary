@@ -1,6 +1,5 @@
 /*
  * The MIT License
- * Copyright (c) 2012 Matias Meno <m@tias.me>
  */
 .dropzone, .dropzone * {
   box-sizing: border-box; }
@@ -24,47 +23,27 @@
  }
  .dropzoneHeader{
    position: absolute;
-   left: 45%;
+   left: 43%;
  }
  .dragover {
   background-color: rgba(100, 175, 200,.2);
  }
-.dropzone .dz-preview {
-position: relative;
-display: inline-block;
-width: 120px;
-margin: 0.5em; }
-.dropzone .dz-preview .dz-progress {
-display: block;
-height: 15px;
-border: 1px solid #aaa; }
-.dropzone .dz-preview .dz-progress .dz-upload {
-display: block;
-height: 100%;
-width: 0;
-background: green; }
-.dropzone .dz-preview .dz-error-message {
-color: red;
-display: none; }
-.dropzone .dz-preview.dz-error .dz-error-message, .dropzone .dz-preview.dz-error .dz-error-mark {
-display: block; }
-.dropzone .dz-preview.dz-success .dz-success-mark {
-display: block; }
-.dropzone .dz-preview .dz-error-mark, .dropzone .dz-preview .dz-success-mark {
-position: absolute;
-display: none;
-left: 30px;
-top: 30px;
-width: 54px;
-height: 58px;
-left: 50%;
-margin-left: -27px; }
 
-.thumb {
-height: 75px;
-border: 1px solid #000;
-margin: 10px 5px 0 0;
-}
+ .dropzoneProgressBar{
+  display: none;
+  display: var(--progressBarDisplay);
+  position: absolute;
+  top: 200px;
+  left: 40%;
+  width: 20%;
+  height: 20px;
+  border: 2px solid rgba(50, 75, 75, 1);
+  border-radius: 5px;
+  background: -moz-linear-gradient(left, rgba(0,36,0,1) var(--gradientEnd), rgba(65,219,65,1) var(--gradientEnd)); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left, rgba(0,36,0,1) var(--gradientEnd),rgba(65,219,65,1) var(--gradientEnd)); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right, rgba(0,36,0,1) var(--gradientEnd),rgba(65,219,65,1) var(--gradientEnd)); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+
+ }
 
 .summaryContainer {
   position: relative;

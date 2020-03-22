@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
 
-  <title>The HTML5 Herald</title>
+  <title>Google Fit Export Summary</title>
   <meta name="description" content="Google Fit Export Summary">
   <meta name="author" content="KC Embrey">
 
@@ -15,14 +15,11 @@
 <body>
 
   <div class="dropzoneContainer">
-    <span class="dropzoneHeader">Drop tcx files here</span>
+    <span class="dropzoneHeader">Drop Google Fit files here</span>
     <input type="file" webkitdirectory directory id="tcxdropzone" class="dropzone"></input>
+    <div class="dropzoneProgressBar"></div>
   </div>
   <div id="tcxSummaryContainer" class="summaryContainer"></div>
-  <div class="dropzoneContainer">
-    <span class="dropzoneHeader">Drop csv files here</span>
-    <input type="file" webkitdirectory directory  id="csvdropzone" class="dropzone"></input>
-  </div>
   <div id="csvSummaryContainer" class="summaryContainer"></div>
   <script src="js/xml2json.js"></script>
   <script src="js/csv2json.js"></script>
