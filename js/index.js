@@ -6,15 +6,22 @@ const fileType = {tcx: 'tcx', csv: 'csv'};
     evt.stopPropagation();
     evt.preventDefault();
     evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    evt.target.classList.add('dragover');
   }
 
-
-
-  function handleFileSelect(evt) {
+  function handleDragLeave(evt) {
     evt.stopPropagation();
     evt.preventDefault();
-    var files = evt.dataTransfer.files; // FileList object
+    evt.target.classList.remove('dragover');
+  }
+
+  function handleFileSelect(evt) {
+    // evt.stopPropagation();
+    // evt.preventDefault();    
+    var files = evt.dataTransfer && evt.dataTransfer.files[0].type !== '' ? evt.dataTransfer.files : evt.target.files; // FileList object
     var type = evt.target.id === 'tcxdropzone' ? fileType.tcx : fileType.csv;
+
+    if (files.length <= 0){ return true;}
 
     var summaryContainer = (type === fileType.tcx) ? document.getElementById('tcxSummaryContainer') : document.getElementById('csvSummaryContainer');
     while (summaryContainer.lastChild){
@@ -85,10 +92,14 @@ const fileType = {tcx: 'tcx', csv: 'csv'};
   // Setup the dnd listeners.
   var tcxdropzone = document.getElementById('tcxdropzone');
   tcxdropzone.addEventListener('dragover', handleDragOver, false);
+  tcxdropzone.addEventListener('dragleave', handleDragLeave, false);
   tcxdropzone.addEventListener('drop', handleFileSelect, false);
+  tcxdropzone.addEventListener('change', handleFileSelect, false);
   var csvdropzone = document.getElementById('csvdropzone');
   csvdropzone.addEventListener('dragover', handleDragOver, false);
+  csvdropzone.addEventListener('dragleave', handleDragLeave, false);
   csvdropzone.addEventListener('drop', handleFileSelect, false);
+  csvdropzone.addEventListener('change', handleFileSelect, false);
 
   
   function getActivitySummary(data, dataContainer){

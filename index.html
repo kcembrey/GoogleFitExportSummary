@@ -14,13 +14,19 @@
 
 <body>
 
-<div id="tcxdropzone" class="dropzone">Drop tcx files here</div>
-<div id="tcxSummaryContainer" class="summaryContainer"></div>
-<div id="csvdropzone" class="dropzone">Drop csv files here</div>
-<div id="csvSummaryContainer" class="summaryContainer"></div>
-<script src="js/xml2json.js"></script>
-<script src="js/csv2json.js"></script>
-<script src="js/moment.js"></script>
-<script src="js/index.js"></script>
+  <div class="dropzoneContainer">
+    <span class="dropzoneHeader">Drop tcx files here</span>
+    <input type="file" webkitdirectory directory id="tcxdropzone" class="dropzone"></input>
+  </div>
+  <div id="tcxSummaryContainer" class="summaryContainer"></div>
+  <div class="dropzoneContainer">
+    <span class="dropzoneHeader">Drop csv files here</span>
+    <input type="file" webkitdirectory directory  id="csvdropzone" class="dropzone"></input>
+  </div>
+  <div id="csvSummaryContainer" class="summaryContainer"></div>
+  <script src="js/xml2json.js"></script>
+  <script src="js/csv2json.js"></script>
+  <script src="js/moment.js"></script>
+  <script src="js/index.js"></script>
 </body>
 </html>
