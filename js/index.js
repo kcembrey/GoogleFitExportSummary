@@ -1,5 +1,7 @@
 /*jshint esversion: 6 */
 
+const fileType = {tcx: 'tcx', csv: 'csv'};
+
   function handleDragOver(evt) {
     evt.stopPropagation();
     evt.preventDefault();
@@ -12,6 +14,38 @@
     evt.stopPropagation();
     evt.preventDefault();
     var files = evt.dataTransfer.files; // FileList object
+    var type = evt.target.id === 'tcxdropzone' ? fileType.tcx : fileType.csv;
+
+    var summaryContainer = (type === fileType.tcx) ? document.getElementById('tcxSummaryContainer') : document.getElementById('csvSummaryContainer');
+    var dataContainer = document.createElement('table');
+    summaryContainer.appendChild(dataContainer);
+    var currentRow = document.createElement('tr');
+    if (type === fileType.tcx){
+        appendCell('Timestamp', currentRow);
+        appendCell('Activity', currentRow);
+        appendCell('Distance', currentRow);
+        appendCell('Minutes', currentRow);
+        appendCell('Calories', currentRow);
+        appendCell('Avg Heartrate', currentRow);
+        appendCell('Min Heartrate', currentRow);
+        appendCell('Max Heartrate', currentRow);
+    }
+    else{
+        appendCell('Date', currentRow);
+        appendCell('Status', currentRow);
+        appendCell('Steps', currentRow);
+        appendCell('Move Minutes', currentRow);
+        appendCell('Active (m)', currentRow);
+        appendCell('Running (m)', currentRow);
+        appendCell('Walking (m)', currentRow);
+        appendCell('Calories', currentRow);
+        appendCell('Avg Heartrate', currentRow);
+        appendCell('Min Heartrate', currentRow);
+        appendCell('Max Heartrate', currentRow);
+    }
+
+    dataContainer.appendChild(currentRow);
+
 
     // Loop through the FileList and render image files as thumbnails.
     for (var i = 0, f; f = files[i]; i++) {
@@ -27,13 +61,14 @@
       reader.onload = (function(theFile) {
         return function(e) {
 
-            var summary = theFile.name.substring(theFile.name.length - 3) === 'tcx' ? getActivitySummary(e.target.result) : getAggregationSummary(e.target.result, theFile.name);
+            var summary = (type === fileType.tcx) ? getActivitySummary(e.target.result, dataContainer) : getAggregationSummary(e.target.result, theFile.name, dataContainer);
+            
 
             if (summary != ''){
-                // Add to summaries.
-                var span = document.createElement('div');
-                span.innerHTML = summary;
-                document.getElementById('list').insertBefore(span, null);
+            //     // Add to summaries.
+            //     var span = document.createElement('div');
+            //     span.innerHTML = summary;
+                summaryContainer.appendChild(dataContainer);
             }
         };
       })(f);
@@ -52,7 +87,7 @@
   csvdropzone.addEventListener('drop', handleFileSelect, false);
 
   
-  function getActivitySummary(data){
+  function getActivitySummary(data, dataContainer){
     var dataObj = X2J.parseXml(data)[0];
     var activities = dataObj.TrainingCenterDatabase[0].Activities[0].Activity;
     var activityType;
@@ -105,15 +140,24 @@
         averageHR = averageHR / totalAverageReadings;
 
         if(averageHR > 0){
-            summaries += '<div>Timestamp: ' + timestamp + ' - ' + intensity + ' ' + activityType + ': ' + roundToPrecision(distance / 1000, 3) + ' km ' + roundToPrecision(totalTime / 60, 0) + ' min ' +
-            roundToPrecision(calories, 0) + ' calories - HeartRate Readings: ' + roundToPrecision(averageHR, 0) + 'avg ' + roundToPrecision(minimumHR, 0) + 'min ' + roundToPrecision(maximumHR, 0) + 'max</div>';
+            let currentRow = document.createElement('tr');
+            
+            appendCell(timestamp, currentRow);
+            appendCell(intensity + ' ' + activityType, currentRow);
+            appendCell(roundToPrecision(distance / 1000, 3), currentRow);
+            appendCell(roundToPrecision(totalTime / 60, 0), currentRow);
+            appendCell(roundToPrecision(calories, 0), currentRow);
+            appendCell(roundToPrecision(averageHR, 0), currentRow);
+            appendCell(roundToPrecision(minimumHR, 0), currentRow);
+            appendCell(roundToPrecision(maximumHR, 0), currentRow);
+            dataContainer.appendChild(currentRow);
         }
     }
 
-    return summaries;
+    return true;
 }
 
-  function getAggregationSummary(data, filename){
+  function getAggregationSummary(data, filename, dataContainer){
     var dataObj = csvJSON(data);
     var distance = 0;
     var activeTime = 0;
@@ -152,8 +196,21 @@
     }
     averageHR = averageHR / totalAverageReadings;
 
-    return '<div>Date: ' + filename.substring(0, filename.length - 4) + (incompleteData ? ' (INCOMPLETE)' : '') + ' - ' + stepCount + ' steps ' + moveMinutes + ' move minutes ' + roundToPrecision((activeTime / 1000 / 60), 0) + ' minutes active ' + roundToPrecision((timeRunning / 1000 / 60), 0) + ' minutes running ' + roundToPrecision((timeWalking / 1000 / 60), 0) + ' minutes walking ' +
-    roundToPrecision(calories, 0) + ' calories - HeartRate Readings: ' + roundToPrecision(averageHR, 0) + 'avg ' + roundToPrecision(minimumHR, 0) + 'min ' + roundToPrecision(maximumHR, 0) + 'max</div>';
+    let currentRow = document.createElement('tr');
+    appendCell(filename.substring(0, filename.length - 4), currentRow);
+    appendCell(incompleteData ? 'INCOMPLETE' : 'complete', currentRow);
+    appendCell(stepCount, currentRow);
+    appendCell(moveMinutes, currentRow);
+    appendCell(roundToPrecision((activeTime / 1000 / 60), 0), currentRow);
+    appendCell(roundToPrecision((timeRunning / 1000 / 60), 0), currentRow);
+    appendCell(roundToPrecision((timeWalking / 1000 / 60), 0), currentRow);
+    appendCell(roundToPrecision(calories, 0), currentRow);
+    appendCell(roundToPrecision(averageHR, 0), currentRow);
+    appendCell(roundToPrecision(minimumHR, 0), currentRow);
+    appendCell(roundToPrecision(maximumHR, 0), currentRow);
+    dataContainer.appendChild(currentRow);
+
+    return true;
 }
 
 
@@ -168,4 +225,10 @@ function extractFloatFromCSV(inputValue){
     else{
         return parseFloat(inputValue);
     }
+}
+
+function appendCell(cellValue, parent){
+    var cell = document.createElement('td');
+    cell.innerHTML = cellValue;
+    parent.appendChild(cell);
 }
